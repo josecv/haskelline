@@ -1,4 +1,4 @@
-module Cmd
+module Hline.Cmd
 ( Cmd
 , resolveCmd
 , sh
