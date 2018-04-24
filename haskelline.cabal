@@ -45,24 +45,39 @@ extra-source-files:  ChangeLog.md
 -- Constraint on the version of Cabal needed to build this package.
 cabal-version:       >=1.10
 
+library haskelline-internal
+  exposed-modules:     Hline.Cmd, Hline.Icons, Hline.Prompt
+  build-depends:       base >=4.11 && <4.12
+                     , text
+                     , process
+  hs-source-dirs:      src
+  ghc-options:         -Wall -XOverloadedStrings
+  default-language:    Haskell2010
 
 executable haskelline
   -- .hs or .lhs file containing the Main module.
   main-is:             Main.hs
 
-  -- Modules included in this executable, other than Main.
-  other-modules:       Hline.Cmd
-
   -- LANGUAGE extensions used by modules in this package.
   -- other-extensions:
 
   -- Other library packages from which modules are imported.
-  build-depends:       base >=4.11 && <4.12, text, process
+  build-depends:       base >=4.11 && <4.12
+                     , haskelline-internal
 
   -- Directories containing source files.
-  hs-source-dirs:      src
+  hs-source-dirs:      .
 
   -- Base language which the package is written in.
   default-language:    Haskell2010
 
-  ghc-options:         -Wall -XOverloadedStrings
+test-suite test-haskelline
+  main-is:             TestMain.hs
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  build-depends:       base >=4.11 && <4.12
+                     , haskelline-internal
+                     , tasty
+                     , tasty-hunit
+                     , HUnit
+  default-language:    Haskell2010
