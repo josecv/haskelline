@@ -54,8 +54,9 @@ library haskelline-internal
   build-depends:       base >=4.11 && <4.12
                      , text
                      , process
+                     , parallel
   hs-source-dirs:      src
-  ghc-options:         -Wall -XOverloadedStrings
+  ghc-options:         -Wall -XOverloadedStrings -threaded
   default-language:    Haskell2010
 
 executable haskelline
@@ -75,7 +76,7 @@ executable haskelline
 
   -- Base language which the package is written in.
   default-language:    Haskell2010
-  ghc-options:         -Wall -XOverloadedStrings
+  ghc-options:         -Wall -XOverloadedStrings -threaded
 
 test-suite test-haskelline
   main-is:             TestMain.hs
