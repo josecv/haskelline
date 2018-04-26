@@ -2,8 +2,8 @@ module Main where
 
 import Hline.Prompt
 import Hline.Segments
-import Hline.SegmentExecutor
 import qualified Data.Text as T
+import Control.Parallel.Strategies
 
 main :: IO ()
-main = (fmap (\x -> buildLeftPrompt [x]) $ execute KubeControl) >>= (putStrLn . T.unpack)
+main = (sequence $ parMap rpar runSegment ["kubecontext"]) >>= (putStrLn . T.unpack . buildLeftPrompt)

@@ -1,5 +1,5 @@
 module Hline.Segments
-( KubeControl(..)
+( runSegment
 
 )
 where
@@ -10,10 +10,14 @@ import Hline.Prompt
 import Control.Parallel
 import qualified Data.Text as T
 
-data KubeControl = KubeControl
+runSegment :: T.Text -> IO (Maybe Segment)
+runSegment "kubecontext" = execute KubeContext
+runSegment _ = error "No such segment"
 
-instance SegmentExecutor KubeControl where
-    execute KubeControl = (resolveCmd "kubectl") >>= buildSegment
+data KubeContext = KubeContext
+
+instance SegmentExecutor KubeContext where
+    execute KubeContext = (resolveCmd "kubectl") >>= buildSegment
         where buildSegment Nothing = return Nothing
               buildSegment (Just cmd) = getText cmd >>= return . Just . (\x -> Segment x (Just "white") (Just "magenta"))
               getText cmd = let namespace = (\c -> T.words ([t | t <- (T.lines c), (T.head t) == '*'] !! 0) !! 4) <$> (sh cmd ["config", "get-contexts", "--no-headers"])
