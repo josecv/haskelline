@@ -49,6 +49,8 @@ library haskelline-internal
   exposed-modules:     Hline.Cmd
                      , Hline.Icons
                      , Hline.Prompt
+                     , Hline.Segments
+                     , Hline.SegmentExecutor
   build-depends:       base >=4.11 && <4.12
                      , text
                      , process
