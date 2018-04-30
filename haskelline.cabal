@@ -85,7 +85,5 @@ test-suite test-haskelline
   hs-source-dirs:      test
   build-depends:       base >=4.11 && <4.12
                      , haskelline-internal
-                     , tasty
-                     , tasty-hunit
                      , HUnit
   default-language:    Haskell2010
