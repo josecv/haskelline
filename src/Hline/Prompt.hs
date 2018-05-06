@@ -16,11 +16,11 @@ data LeftAcc = LeftAcc T.Text (Maybe String)
              | First
 
 buildLeftPrompt :: [Maybe Segment] -> T.Text
-buildLeftPrompt segments =  promptClear `T.append` (renderAcc $ doFold $ catMaybes segments)
+buildLeftPrompt segments =  renderAcc $ doFold $ catMaybes segments
     where doFold = foldl folder First
           renderAcc First = "" -- lol empty prompt
-          renderAcc (LeftAcc textAcc Nothing) = T.concat [textAcc, bgEnd, fgEnd, " "]
-          renderAcc (LeftAcc textAcc lastBg) = T.concat [textAcc, bgEnd, fgFormat lastBg, icon "LEFT_SEGMENT_SEPARATOR", fgEnd, " "]
+          renderAcc (LeftAcc textAcc Nothing) = T.concat [promptClear, textAcc, bgEnd, fgEnd, " "]
+          renderAcc (LeftAcc textAcc lastBg) = T.concat [promptClear, textAcc, bgEnd, fgFormat lastBg, icon "LEFT_SEGMENT_SEPARATOR", fgEnd, " "]
           folder First segment = LeftAcc (firstSegment segment) (getBg segment)
           folder (LeftAcc textAcc lastBg) (Segment text fg bg) = LeftAcc (T.append textAcc (renderText lastBg (Segment text fg bg))) bg
           renderText Nothing segment = firstSegment segment

@@ -86,5 +86,7 @@ test-suite test-haskelline
   build-depends:       base >=4.11 && <4.12
                      , haskelline-internal
                      , HUnit
+                     , test-framework
+                     , test-framework-hunit
   default-language:    Haskell2010
   ghc-options:         -Wall -XOverloadedStrings -threaded
