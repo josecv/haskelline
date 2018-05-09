@@ -1,6 +1,7 @@
 module Hline.Prompt
 ( Segment(..)
 , buildLeftPrompt
+, buildRightPrompt
 ) where
 
 import qualified Data.Text as T
@@ -12,21 +13,32 @@ data Segment = Segment { text :: T.Text
                        , bg :: Maybe String
                        } deriving Show
 
-data LeftAcc = LeftAcc T.Text (Maybe String)
-             | First
+data SegmentAcc = SegmentAcc T.Text (Maybe String)
+                           | First
 
 buildLeftPrompt :: [Maybe Segment] -> T.Text
-buildLeftPrompt =  renderAcc . foldl folder First . catMaybes
+buildLeftPrompt = renderAcc . foldl folder First . catMaybes
     where renderAcc First = "" -- lol empty prompt
-          renderAcc (LeftAcc textAcc Nothing) = T.concat [promptClear, textAcc, bgEnd, fgEnd, " "]
-          renderAcc (LeftAcc textAcc lastBg) = T.concat [promptClear, textAcc, bgEnd, fgFormat lastBg, icon "LEFT_SEGMENT_SEPARATOR", fgEnd, " "]
-          folder First segment = LeftAcc (firstSegment segment) (getBg segment)
-          folder (LeftAcc textAcc lastBg) (Segment text' fg' bg') = LeftAcc (T.append textAcc (renderText lastBg (Segment text' fg' bg'))) bg'
-          renderText Nothing segment = firstSegment segment
+          renderAcc (SegmentAcc textAcc Nothing) = T.concat [promptClear, textAcc, bgEnd, fgEnd, " "]
+          renderAcc (SegmentAcc textAcc lastBg) = T.concat [promptClear, textAcc, bgEnd, fgFormat lastBg, icon "LEFT_SEGMENT_SEPARATOR", fgEnd, " "]
+          folder First segment = SegmentAcc (renderText Nothing segment) (getBg segment)
+          folder (SegmentAcc textAcc lastBg) (Segment text' fg' bg') = SegmentAcc (T.append textAcc $ renderText lastBg $ Segment text' fg' bg') bg'
+          renderText Nothing (Segment text' fg' bg') = T.concat [bgFormat bg',  " ", showContent text' fg', " "]
           renderText lastBg (Segment text' fg' bg')
-                | lastBg == bg' = T.concat [bgFormat bg', fgFormat fg', icon "LEFT_SUBSEGMENT_SEPARATOR", " ", showContent text' fg', " "]
+                | lastBg == bg' = T.concat [fgFormat fg', icon "LEFT_SUBSEGMENT_SEPARATOR", " ", text', " "]
                 | otherwise = T.concat [bgFormat bg', fgFormat lastBg, icon "LEFT_SEGMENT_SEPARATOR", " ", showContent text' fg', " "]
-          firstSegment (Segment text' fg' bg') = T.concat [bgFormat bg',  " ", showContent text' fg', " "]
+
+buildRightPrompt :: [Maybe Segment] -> T.Text
+buildRightPrompt = renderAcc . foldl folder First . catMaybes
+    where renderAcc First = ""
+          renderAcc (SegmentAcc textAcc _) = T.concat [promptClear, textAcc, promptClear]
+          folder First segment = SegmentAcc (renderText Nothing segment) (getBg segment)
+          folder (SegmentAcc textAcc lastBg) (Segment text' fg' bg') = SegmentAcc (T.append textAcc $ renderText lastBg $ Segment text' fg' bg') bg'
+          renderText Nothing (Segment text' fg' bg') = T.concat [fgFormat bg', icon "RIGHT_SEGMENT_SEPARATOR", bgFormat bg', " ", showContent text' fg', " "]
+          renderText lastBg (Segment text' fg' bg')
+                | lastBg == bg' = T.concat [fgFormat fg', icon "RIGHT_SUBSEGMENT_SEPARATOR", " ", text', " "]
+                | otherwise = T.concat [fgFormat bg', icon "RIGHT_SEGMENT_SEPARATOR", bgFormat bg', " ", showContent text' fg', " "]
+
 
 getBg :: Segment -> Maybe String
 getBg (Segment _ _ bg') = bg'

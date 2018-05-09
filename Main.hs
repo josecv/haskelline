@@ -6,4 +6,4 @@ import qualified Data.Text as T
 import Control.Parallel.Strategies
 
 main :: IO ()
-main = (sequence $ parMap rpar runSegment ["kubecontext"]) >>= (putStrLn . T.unpack . buildLeftPrompt)
+main = (sequence $ parMap rpar runSegment ["kubecontext"]) >>= (putStr . T.unpack . buildRightPrompt)
